@@ -98,3 +98,12 @@ An authorised Grafana operator should separately export only rule UID/title,
 expression, hold time, enabled state and routing names, excluding contact-point
 credentials and recipients. Compare with reviewed source and record drift. Do not
 call an unavailable export “matching”. No such export is claimed in this review.
+
+## Advisory review update
+
+The [review dispositions](../reviews/operations-plan-disposition-20261020.md) add
+state-loss, non-finite output, notification dependency, backup completeness and
+permission-boundary detail. Selected upstream v0.22.2 behavior was checked against
+an immutable tag commit; installed Slim bytes still need reconciliation. The
+revised team plan starts with one operator and domain playbooks. No live change or
+new unattended execution was authorised by either review.

@@ -6,6 +6,10 @@ owner sets policy; specialists diagnose and propose changes; a restricted execut
 performs only authorised actions; an independent verifier checks recovery. Routine
 health assessment continues without model access.
 
+**Revision after owner-supplied Argon and Claude reviews:** start with one operator
+and domain playbooks; retain the full professional responsibility catalogue as the
+long-term scope. See the [review dispositions](../reviews/operations-plan-disposition-20261020.md).
+
 **Status:** implementation plan only. No new profiles, privileges, repairs, schedules
 or model jobs are deployed by this document. The existing read-only operator and
 empty restart allowlist remain the current authority. The
@@ -44,8 +48,9 @@ scheduler databases directly, or introduce another competing board/control plane
 ## Professional roles and ownership
 
 These are logical responsibilities. Specialists run on demand; they are not sixteen
-permanent model processes. Each service has one accountable owner and deputies in
-a service catalogue, with dependency, maintenance, recovery and privacy information.
+permanent model processes. Each service has one accountable owner in a catalogue that records dependencies,
+maintenance, recovery and privacy information. Mark remains the sole human approver
+until a deputy is actually appointed.
 
 | Professional role | Owns and investigates | Outputs and handoff |
 | --- | --- | --- |
@@ -70,39 +75,46 @@ Mark is the service owner and policy/approval authority. Automated roles can req
 a decision with a concrete plan; they cannot manufacture owner approval. Security
 and operations share incidents rather than maintaining conflicting status records.
 
-## Initial profile footprint
+## Initial runtime and enforceable ownership
 
-Begin with the existing operator as the **operations lead and triage** entry point,
-then introduce read-only specialist profiles gradually:
+Begin with **one existing read-only operator profile**, performing lead/triage and
+loading versioned systems, network/wireless/DNS, recovery, security, platform and
+reliability playbooks on demand. The responsibility catalogue remains intact; a
+role is useful expertise and accountability even when it is not a separate process.
+Do not deploy the earlier fixed six-specialist profile rollout. Additional profiles
+are optional later, justified by measured workload, context quality or distinct
+access requirements and supported runtime routing. Do not enable delegation now.
 
-1. **Observability/SRE** — first, because missing and misleading checks caused this gap.
-2. **Systems** — Linux, systemd, time and host resources.
-3. **Network** — initially with distinct routing, wireless and DNS role skills.
-4. **Security** — initially SOC, vulnerability and access-review skills; no credential access by default.
-5. **Recovery** — backup, storage and restoration planning using metadata.
-6. **Verifier** — independent acceptance and post-change checks.
+Use deterministic checks and verifiers for measurable acceptance. Another model
+can critique a diagnosis later; a second profile under the same UID is not a
+protected verification or approval authority. Protected code, evidence and action
+permissions must have named owners before any new automation is activated.
 
-Platform, change/release, problem management and cost responsibilities start as
-explicitly owned skills/workflows and can become dedicated profiles when measured
-workload or a permission boundary warrants it. Split wireless, DNS or identity into
-separate profiles when their access, sustained workload or review requirements differ.
-Keep the full responsibility catalogue from day one even while several roles share
-a read-only profile. Review independence must be real, not a role label supplied by
-the same actor. Record authenticated execution identity; model-family declarations
-are supporting metadata, not proof of separation.
+| Component | Proposed enforceable ownership | Capability and limits |
+| --- | --- | --- |
+| Sensors and verifier | Root-owned deployed code; existing service accounts or a dedicated `opsmon` identity with only necessary read access. | Bounded read-only checks; its state/output is not writable by `hermes`. Avoid root where ordinary permissions suffice; privileged metadata readers require a separate reviewed scope. Verification is independent of the operator/executor's writable state, not proof against a compromised host. |
+| Model operator | Existing `hermes` UID and sandbox; no sudo or privileged execution endpoint initially. | Narrative triage and domain playbooks. Its writable home/history is not an authoritative approval or trusted sensor store. |
+| Policy and executable runbooks | Root/operator-controlled deployment outside model-writable parents, or reviewed read-only mounts. | File ownership alone inside a model-writable parent is insufficient; validate replacement/rename and alternate-path behavior. Keep necessary session/runtime state writable separately. |
+| Owner maintenance | Mark's existing authenticated SSH and reviewed repository workflow. | Initially the only production change path. The model cites reviewed runbook/action IDs; a new privileged command requires review before it becomes a phone copy/paste instruction. |
+| Future executor | Separate restricted service, independently approved action catalogue and owner-controlled approval store. | Not part of the first milestone. No unrestricted shell, agent-written approval or blanket service restart permission. |
 
-The **change executor** is a separate later component: preferably a deterministic
-service/helper with a fixed action catalogue. An agent may prepare and submit a
-change request; the executor must not offer a general privileged terminal.
+The present sandbox protects system writes but permits writes in the Hermes home.
+The reviewed drop-in does not enforce a LAN destination allowlist. An empty Hermes
+`command_allowlist` is not a deny-all terminal policy. Explicit egress constraints,
+read-only code paths and additional identities are future reviewed changes, with
+DNS/provider/notification dependencies tested before activation. None are silently
+assumed to exist today.
 
 ## Evidence, handoffs and incident state
 
-Use one incident store/status writer. Sensors submit events; the lead coordinates
-state transitions through a supported API with revision/concurrency checks; workers
+Use one incident store/status writer, initially the existing operator and supported
+Hermes task/execution interfaces where verified on Slim. Sensors submit events;
+the lead coordinates state transitions through a supported API with revision/concurrency checks; workers
 submit scoped evidence/results. Do not have agents rewrite one another's JSON or
-create a second Kanban board. Integrate with the owner's chosen incident/task store
-through its supported interface; choose it after reviewing the existing Hermes and
-workspace tooling, before implementing a new incident backend.
+create competing incident boards for the same project. Integrate with the owner's chosen
+incident/task store through its supported interface; choose it after reviewing the existing Hermes and
+workspace tooling, before implementing a new incident backend. Prefer an existing on-Slim operations board through supported APIs if its claims/recovery semantics meet the requirements.
+The incident/task store is coordination state, never an approval trust anchor.
 
 An incident must include:
 
@@ -158,7 +170,11 @@ DHCP authority. The Unbound alert's checked-in quick-fix upstream-change annotat
 must not become an automatic playbook merely because it appears in alert text.
 
 Monitoring continues without an LLM, WAN connection or successful repair. Keep raw
-owner alerts and the external dead-man channel independent of triage. A whole-Slim
+owner alerts independent of model execution. Grafana and Hermes currently share
+Telegram/WAN dependencies; they are not independent notification channels. Verify
+the already documented Healthchecks email path and its actual delivery separately.
+Monitor Grafana notification failures and Hermes stages without routing the only
+failure notice through the same failed channel. A whole-Slim
 failure requires an outside observer and a human recovery path; agents hosted only
 on Slim cannot repair its power, OS failure or lost network access.
 
@@ -175,12 +191,22 @@ on Slim cannot repair its power, OS failure or lost network access.
 
 When clock quality is poor, qualify wall-clock incident ordering. Use monotonic
 elapsed time within a boot for timeouts/leases where supported and record boot IDs.
+Pre-compute epoch conversions and deltas in evidence tools, rather than relying on the model for arithmetic. Rsyslog uses Slim reception timestamps for
+ASUS lines; do not treat them as an independent ASUS clock. Clock uncertainty should
+qualify age conclusions, not blanket-mute genuine outage/security signals.
 An approval/time check that cannot establish freshness must not authorise a repair.
 
 ## Reliability, communications and cost
 
-Use a bounded durable work queue through supported interfaces. Persist intake before
-acknowledgement; distinguish dispatch from triage completion and Telegram delivery.
+Use a bounded durable work queue through supported interfaces. Upstream Hermes
+v0.22.2 at `d923a5eb` supports webhook `cron_job` routes and a cron execution ledger,
+but this is not verification of Slim's installed bytes. In that tagged source,
+`cron_job` and `coalesce` are mutually exclusive, HTTP 202 precedes the worker run,
+and the execution ledger explicitly is not a retry queue. A flag change alone
+therefore does not make intake durable. Reconcile the installed implementation,
+persist intake before acknowledgement, and define correlation, claiming, retry and
+delivery receipts without assuming native in-memory coalescing supplies them. Distinguish dispatch
+from triage completion and Telegram delivery.
 Use idempotency keys, finite retry/backoff (initial proposal: 1, 5 and 15 minutes),
 a task deadline and a dead-letter/owner escalation outcome. Re-evaluate severity
 and whether the issue recovered; retain failed attempts. A resolved alert can still
@@ -190,8 +216,13 @@ on them; the present four-hour repeat is not equivalent.
 
 Keep one incident writer and at most one change execution per dependency group.
 Begin with one model investigation at a time on Slim, bounded context/turns and an
-owner-set daily spend limit. Deterministic sensors and scheduling do not make model
-calls. Specialists consult one another through a shared evidence packet, not endless
+owner-set daily spend limit. Enforce concurrency with verified job claims/locking;
+a shared coalesce key is not a global semaphore. A terminal command timeout is not
+a whole-agent deadline, and turns, model invocations and tokens are different units.
+Read-only retries still consume budget and require authorised unattended limits;
+they are not automatically safe to activate. Measure resource use before proposing
+MemoryMax/TasksMax/CPU controls. Do not adopt an unverified daily dollar estimate.
+Deterministic sensors and scheduling do not make model calls. Specialists consult one another through a shared evidence packet, not endless
 agent debates. Expand concurrency only after measuring CPU, RAM, queue latency,
 missed deadlines, spend, false positives and successful outcomes.
 
@@ -205,13 +236,57 @@ Model selection is a measured workload decision: evaluate actual installed/provi
 capabilities, accuracy, cost and privacy before changing models. Do not assume that
 more profiles or higher reasoning alone supplies missing telemetry.
 
+## Cross-cutting follow-up from review
+
+- **State and output correctness:** distinguish intentional first-install bootstrap
+  from lost/corrupt watcher state; do not silently discard current login/restart
+  events. Reject malformed/non-finite values, preserve errors and expose reset/partial
+  coverage. Validate the syslog metrics source-address configuration and parse the
+  actual login source field, including supported IPv6 forms. Do not classify a
+  second address in a line as the source.
+- **Bounded storage:** trim histories to a real byte low-water mark, not just a
+  line count that can remain above the rewrite threshold. Expose dropped/overflow
+  records and ensure both batch firing and resolution transitions remain accounted
+  for. Preserve watcher events until notification outcome is known.
+- **Detection contracts:** review each `noDataState: OK` against expected inventory,
+  missing series, scrape state, query errors and retired targets. An exporter `up`
+  series alone does not prove every required metric exists. Do not mass-switch
+  rules to Alerting or adopt either suggested reboot expression without fixtures.
+- **Privacy and security coverage:** explicitly assign Observability + Security +
+  DNS ownership of any narrow PS5 query counter, Systems/Security ownership of host
+  and Grafana login coverage, and Network ownership of gateway-log feasibility.
+  A DNS query counter is not proof of Sony connectivity or enforcement of isolation;
+  direct IP/encrypted-name paths remain outside that evidence. A new private-query
+  reader needs Mark's explicit scope approval, fixed identity/domain matching,
+  bounded read-only database access and rotation/cursor handling. Do not grant
+  general agents access to household DNS history.
+- **Backup truth:** Recovery owns archive completeness/manifests, separately from
+  compression integrity and local success timestamps. Recovery + Platform own a
+  receiver-confirmed off-host receipt after verification/atomic publication; a
+  server finishing a download does not prove receiver retention. Preserve the
+  backup key's read-only capability. Recovery agents get metadata, not archive
+  contents, which include credentials and DNS history. Restore drills stay isolated
+  and explicitly approved.
+- **Maintenance and ownership:** Change/Release owns Grafana silences/mute timings
+  with explicit expiry/scope; Observability owns live/source drift auditing. Capacity
+  owns measured budgets, and Problem Management owns reviewed repeated-event trends.
+  These are responsibilities, not a requirement for permanent agents.
+
+Initial severity/response objectives (proposed, not a staffed SLA): confirmed
+household outage or security impact → raw alert after its detector hold, prompt
+triage or explicit unavailable status; persistent degradation → warning and a
+triage/escalation target of ten minutes after detection; uncorroborated observations
+→ daily digest. Track actual latency. No automatic high-impact action follows from
+severity. If Mark is unavailable, the default is alert and preserve evidence, with
+no invented deputy or escalation authority.
+
 ## Phased delivery and completion gates
 
 | Phase | Concrete deliverables | Gate before moving on |
 | --- | --- | --- |
 | 0 — reconcile | Safe live job/config/rule summary, source hashes, service/dependency catalogue, responsibility/authority matrix and detection coverage register. | Owner or existing Slim operator supplies protected metadata without secrets; unknown fields remain unknown. Confirm installed Hermes integration support. |
-| 1 — complete observation | Clock check, safe reboot detection, radio baseline counter, degradation summary, checker freshness and explicit unknown/error handling; read-only routing design. | Fixture checks and shadow observations; planned maintenance suppression; false-positive review; signed synthetic delivery accepted then removed. No real outage induced without approval. |
-| 2 — team triage | Lead plus scoped specialists, one incident store interface, durable intake/stage receipts, retry limits, operator summary and budget controls. | Exercise duplicate/correlated alerts, malformed data, missing permissions, reboot during work, provider failure, Telegram failure and queue saturation with bounded fixtures; separately approve controlled live acceptance. |
+| 1 — reliable observation | Explicit unknown/error/non-finite output, state-loss detection, byte-bounded histories, safe alert guidance, clock/checker health, and rule-by-rule missing-data contracts. Radio/degradation and reboot improvements are separately scoped follow-ons. | Fixture checks and shadow observations; planned maintenance suppression; false-positive review; signed synthetic delivery accepted then removed. No real outage induced without approval. |
+| 2 — reliable triage | One operator with domain playbooks, one incident interface, durable intake/stage receipts, authorised retry limits, explicit concurrency, operator summary and budget controls. Extra profiles require later evidence. | Exercise duplicate/correlated alerts, malformed data, missing permissions, reboot during work, provider failure, Telegram failure and queue saturation with bounded fixtures; separately approve controlled live acceptance. |
 | 3 — supervised repair | One reviewed playbook at a time, restricted executor, trusted owner approval, independent verifier and rollback. | Exact revision/action approved; preflight and permissions checked; isolated rehearsal; live result and rollback evidence reviewed. Network/security invariants remain intact. |
 | 4 — bounded autonomy | Individually approved low-impact allowlist entries, cooldowns and automatic escalation. | Multiple distinct successful supervised cases, independent review, exercised failure/rollback and an owner-approved risk/budget decision. No automatic promotion based solely on a model's assessment. |
 | 5 — wider operations | Dedicated roles where needed, vulnerability/change calendar, capacity forecasts, restore drills and security exercises. | Verified capture/segmentation prerequisites, measured resource capacity, privacy/access review and documented acceptance per new capability. |
@@ -222,7 +297,7 @@ The role catalogue is the destination; each deployed capability needs its own ev
 
 ## First three incident walkthroughs
 
-- **NTP:** deterministic persistent-sync failure → lead → systems + network reachability
+- **NTP:** deterministic persistent-sync failure → lead → systems + network reachability, DNS bootstrap and platform delivery
   evidence → proposed scoped time-service change → required owner approval → restricted
   executor → independent sync/offset/freshness verification over an agreed observation
   window → close or authorised rollback/escalation. Do not reboot the host as a shortcut.

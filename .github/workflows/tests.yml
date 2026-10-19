@@ -21,6 +21,15 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: make test
-      - name: Privileged rollback fixtures on disposable Linux runner
+      - name: Privileged deployment fixtures on disposable Linux runner
         if: runner.os == 'Linux'
-        run: sudo env PYTHONDONTWRITEBYTECODE=1 "$(command -v python3)" -m unittest discover -s deploy/slim/tests -p test_dashboard_rollback.py -v
+        run: sudo env PYTHONDONTWRITEBYTECODE=1 "$(command -v python3)" -m unittest discover -s deploy/slim/tests -p 'test_*.py' -v
+      - name: Check out immutable collector dependency
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: markpierotti/asus-router-telemetry
+          ref: 28fa4126aaa3b1f8ad1a2c6e28ab8a66d70816ab
+          path: .upstream/collector
+          persist-credentials: false
+      - name: Verify pristine pinned collector tree
+        run: python3 scripts/verify-collector.py .upstream/collector

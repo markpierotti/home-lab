@@ -30,7 +30,8 @@ python3 scripts/verify-collector.py /home/rtax/app
 ```
 
 An existing installation needs a backup and reviewed upgrade procedure; do not clone
-over it. Build and independently verify the ARM reporter using upstream’s build
+over it. Verification requires a pristine checkout, including no ignored or untracked
+files; verify before building or running Python there. Build and independently verify the ARM reporter using upstream’s build
 instructions, then configure private target identity and artifact pins. This source
 verifier checks the checkout; it does not authenticate a router or approve a binary.
 

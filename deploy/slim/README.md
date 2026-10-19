@@ -59,7 +59,7 @@ are supplied. Set and store web-administration credentials privately.
    owns its deployment, not the collector source.
    Keep the private key at `/home/rtax/keys/id_ed25519` (`0600`), its directory
    `/home/rtax/keys` (`0700`), and both owned by `rtax`. Start with
-   [collector/config.example.json](https://github.com/markpierotti/asus-router-telemetry/blob/b43e8cf58fcdc16a43f93096a9d2bee0984a30b6/collector/config.example.json); populate a
+   [collector/config.example.json](https://github.com/markpierotti/asus-router-telemetry/blob/28fa4126aaa3b1f8ad1a2c6e28ab8a66d70816ab/collector/config.example.json); populate a
    private `/home/rtax/data/config.json` with the actual target, trusted pins, artifact
    digest and `identity_file`. Set `interactive_auth` false. Do not commit that file.
 3. Verify the router host identity independently. Install the collector's public key

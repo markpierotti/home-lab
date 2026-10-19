@@ -58,8 +58,13 @@ class VerifyTests(unittest.TestCase):
         external = self.root / 'external'
         (self.repo / 'collector').rename(external)
         (self.repo / 'collector').symlink_to(external, target_is_directory=True)
-        with self.assertRaises(ValueError):
-            module.verify(self.repo)
+        real_output = module.subprocess.check_output
+        def status_clean_only(args, **kwargs):
+            # Exercise the explicit path check independently of Git's dirty gate.
+            return '' if 'status' in args else real_output(args, **kwargs)
+        with patch.object(module.subprocess, 'check_output', side_effect=status_clean_only):
+            with self.assertRaisesRegex(ValueError, 'symlink in source path'):
+                module.verify(self.repo)
 
     def test_wrong_revision_is_rejected(self):
         lock = json.loads(self.lock.read_text())

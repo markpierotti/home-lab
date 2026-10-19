@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.env
+.env.*
+*.key
+*.pem
+.DS_Store
+
+# Private home-lab exports and recovery material
+/deploy/slim/private/
+*.tar.gz
+*.sqlite
+*.db
+*.db-wal
+*.db-shm
+id_ed25519*
+slim_backup
+telegram_token
+*known_hosts*
+/.upstream/

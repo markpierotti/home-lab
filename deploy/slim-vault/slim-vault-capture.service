@@ -1,0 +1,18 @@
+[Unit]
+Description=Preserve selected Slim and Hermes evidence before live retention prunes it
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=root
+Group=hermes
+UMask=0027
+ExecStart=/usr/bin/python3 -I /usr/local/lib/slim-vault/capture.py capture
+TimeoutStartSec=5min
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+# SQLite mode=ro may create shared-memory sidecars for WAL databases without one.
+# This exception permits normal SQLite coordination, not application-row changes.
+ReadWritePaths=/var/lib/slim-telemetry-vault /var/lib/slim-vault-capture /home/hermes/.hermes/cron

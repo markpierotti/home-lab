@@ -44,3 +44,11 @@ documented in the operations runbook and never targets the production listener.
 
 Examples use documentation addresses. Real credentials, private device inventory,
 backups, DNS history and rendered Pi-hole screenshots must stay private.
+
+## Private operational memory
+
+The optional [Slim telemetry vault](deploy/slim-vault/README.md) preserves selected
+Hermes and monitoring evidence before live retention removes it, with a separate
+Obsidian reading copy and an evidence-backed learning recorder. Runtime records
+and private settings stay outside this repository. See the
+[20 October installation record](docs/slim-vault-20261020.md).

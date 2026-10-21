@@ -64,6 +64,16 @@ scrape_configs:
       - targets: ['127.0.0.1:9618']
         labels: {instance: asus-rt-ax56u}
 
+  # Observation only until a charged-camera healthy baseline is recorded.
+  # This is network ICMP reachability, never application/cloud availability.
+  - job_name: camera_network
+    metrics_path: /probe
+    params: {module: [icmp]}
+    static_configs:
+      - targets: ['192.0.2.40']
+        labels: {device_role: camera, alert_policy: baseline_pending}
+    relabel_configs: *bb
+
   # Unbound recursive resolver (Pi-hole's only upstream), loopback only
   - job_name: dns_unbound
     metrics_path: /probe

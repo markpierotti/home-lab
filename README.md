@@ -13,6 +13,7 @@ acceptance observations, not a whole-host disaster-recovery guarantee.
 
 - [Deployment examples](deploy/slim/README.md)
 - [Operations and rollback](docs/slim-operations.md)
+- [Incident remedy deployment and limits](docs/slim-remedies-20261022.md)
 - [Dashboard acceptance](docs/slim-dashboards-20261019.md)
 - [Roadmap](docs/home-lab-roadmap.md)
 - [Repository split and source provenance](docs/repository-split-20261019.md)

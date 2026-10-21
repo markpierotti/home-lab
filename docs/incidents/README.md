@@ -8,3 +8,4 @@ fixed. Screenshots are cropped to exclude private endpoints and unrelated conten
 | Date | Observation | Status |
 | --- | --- | --- |
 | 2026-10-20 | [ASUS reboot alert after a reported one-second boot-time shift](20261020-asus-false-reboot.md) | Likely false positive; alert improvement open, no fix deployed. |
+| 2026-10-20–21 | [Camera investigation, recurring ASUS alerts, failed evidence writes and budget warning](20261021-slim-follow-up.md) | Additional screenshot evidence; remedies linked to PR #3, proposed, untested and undeployed. |

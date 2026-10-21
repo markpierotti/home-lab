@@ -5,6 +5,11 @@ one-second change in the derived boot-time metric. The device named in the alert
 was the ASUS RT-AX56U, not Slim. The notification resolved without a reported restart
 or configuration change. Alert sensitivity remains an open follow-up.
 
+**Follow-up:** the [20–21 October operational evidence](20261021-slim-follow-up.md)
+adds recurring alerts, failed evidence writes, an investigation-budget warning and
+the 20 October camera investigation, with proposed remedies linked to PR #3.
+Those remedies remain untested and undeployed; this original record is preserved.
+
 This record uses the owner's Telegram screenshot, captured at 05:52 on 20 October,
 and an inspection of the repository alert source. The bot's historical metric and
 router-log observations below have **not been independently replayed**. Times are

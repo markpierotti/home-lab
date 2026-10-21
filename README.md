@@ -15,6 +15,7 @@ acceptance observations, not a whole-host disaster-recovery guarantee.
 - [Operations and rollback](docs/slim-operations.md)
 - [Dashboard acceptance](docs/slim-dashboards-20261019.md)
 - [Roadmap](docs/home-lab-roadmap.md)
+- [Incident observations](docs/incidents/README.md)
 - [Repository split and source provenance](docs/repository-split-20261019.md)
 
 ## Collector dependency

@@ -1,0 +1,233 @@
+{
+  "sources": [
+    {
+      "id": "S1",
+      "source_filename": "Screenshot 2026-10-22 at 5.45.34 am.png",
+      "capture_time_local": "2026-10-22 05:45:34",
+      "capture_timezone": "Australia/Brisbane (owner context; not printed in screenshot)",
+      "source_size_pixels": [
+        1572,
+        2048
+      ],
+      "source_sha256": "d843fb6c39d8c3e9eb476991cab6aa11b4f3592b900a0a4e54e0ab9116de16f6",
+      "original_public": false
+    },
+    {
+      "id": "S2",
+      "source_filename": "Screenshot 2026-10-22 at 5.46.15 am.png",
+      "capture_time_local": "2026-10-22 05:46:15",
+      "capture_timezone": "Australia/Brisbane (owner context; not printed in screenshot)",
+      "source_size_pixels": [
+        1554,
+        2162
+      ],
+      "source_sha256": "3895dc7192021734e85efb349e0c9054fd1edefbae8592b4d22c6727ba99bc88",
+      "original_public": false
+    },
+    {
+      "id": "S3",
+      "source_filename": "Screenshot 2026-10-22 at 5.46.32 am.png",
+      "capture_time_local": "2026-10-22 05:46:32",
+      "capture_timezone": "Australia/Brisbane (owner context; not printed in screenshot)",
+      "source_size_pixels": [
+        1582,
+        720
+      ],
+      "source_sha256": "734849b6f31b14937ad05567593c47986cd19a72f830c175ff67939d017049f5",
+      "original_public": false
+    }
+  ],
+  "event_dates": {
+    "camera": "2026-10-20, clarified by owner on 2026-10-22; the exchange precedes the 21 October divider",
+    "reboot_alert_cycles": "2026-10-21"
+  },
+  "processing": "Pillow rectangular crops only. Original pixel values retained. No resizing, text changes, redaction overlays or generative editing. Private endpoints and unrelated household data excluded by crop bounds. Separately labelled transcriptions redact details that cannot be safely retained in a crop.",
+  "coordinates": "Origin top-left; x, y, width, height in source pixels. Bounds are half-open.",
+  "crops": [
+    {
+      "file": "camera-tcp-response.png",
+      "source": "S1",
+      "rectangle": [
+        44,
+        480,
+        930,
+        100
+      ],
+      "sha256": "c27f34c17f7886442cdea0a9e025cb0bc5c5b6fd7af7cbc4ae3c49bf77d593b7"
+    },
+    {
+      "file": "camera-monitoring-gap.png",
+      "source": "S1",
+      "rectangle": [
+        44,
+        578,
+        930,
+        103
+      ],
+      "sha256": "cc79f259618f0039181f8112a1eb9139fba22e3f4b570d926eca1b31ef6113f7"
+    },
+    {
+      "file": "camera-ping-limitation.png",
+      "source": "S1",
+      "rectangle": [
+        44,
+        797,
+        930,
+        138
+      ],
+      "sha256": "f9f0bc05a64d3691ece7fb0724a77762ae461fdfcdf2885ff611db5797f550aa"
+    },
+    {
+      "file": "morning-firing.png",
+      "source": "S1",
+      "rectangle": [
+        35,
+        1316,
+        900,
+        131
+      ],
+      "sha256": "f190229a9c3488f0fa2f2e05683748c9256420eec1c80dcbcc0064b9d91ec24e"
+    },
+    {
+      "file": "morning-write-failed.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        55,
+        920,
+        240
+      ],
+      "sha256": "521c66307e5e6299dd54ab3329958ed4eca1f8714879ab6da3d26ebad8c0b5eb"
+    },
+    {
+      "file": "morning-resolved.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        322,
+        490,
+        77
+      ],
+      "sha256": "375fa5ecdb94ad01b5e9ee491374a4f01a902fc18c8a688757bf393ef0517d96"
+    },
+    {
+      "file": "digest-boot-claim.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        714,
+        920,
+        103
+      ],
+      "sha256": "4f4fcd9c2e45a92950bf2c05889a954cb46d4e3429d159806d77544078379445"
+    },
+    {
+      "file": "afternoon-firing.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        1371,
+        890,
+        131
+      ],
+      "sha256": "94675a16e4644e246245866544e2861d4ced631a6635723bb3ff3cc7f6c773d4"
+    },
+    {
+      "file": "iteration-budget.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        1594,
+        850,
+        83
+      ],
+      "sha256": "a489db21355d65422afa8214382ca513da087f056a0b616972d45b43307c2207"
+    },
+    {
+      "file": "afternoon-diagnosis.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        1688,
+        920,
+        153
+      ],
+      "sha256": "b621e3c9cca609cf40501aaa50c8b6defe323edfe0fc14624b32a454a4bd7b0d"
+    },
+    {
+      "file": "afternoon-reported-metrics.png",
+      "source": "S2",
+      "rectangle": [
+        24,
+        1864,
+        920,
+        298
+      ],
+      "sha256": "c6393c3640b9b440eea855dd803a4725158d1207432cf7aceaa03c185842cbd3"
+    },
+    {
+      "file": "afternoon-write-failed.png",
+      "source": "S3",
+      "rectangle": [
+        64,
+        258,
+        920,
+        231
+      ],
+      "sha256": "d253691baa9727b72cad4a775272d1a7b97629826bec44242d45380eccaae260"
+    },
+    {
+      "file": "afternoon-resolved.png",
+      "source": "S3",
+      "rectangle": [
+        64,
+        524,
+        900,
+        68
+      ],
+      "sha256": "76fb60a2519155be4e42a39f3c8f4e8f1ae9c362b7d8b91c45ebff24c042020b"
+    }
+  ],
+  "transcriptions": {
+    "file": "redacted-transcriptions.md",
+    "processing": "Manually transcribed excerpts; omissions labelled in square brackets. Not screenshot images or independently verified telemetry.",
+    "source_regions": [
+      {
+        "section": "Camera",
+        "source": "S1",
+        "rectangle": [
+          28,
+          150,
+          944,
+          1090
+        ]
+      },
+      {
+        "section": "Morning diagnosis",
+        "source": "S1",
+        "rectangle": [
+          28,
+          1534,
+          944,
+          514
+        ]
+      },
+      {
+        "section": "Afternoon persistence claim",
+        "source": "S3",
+        "rectangle": [
+          42,
+          0,
+          942,
+          241
+        ]
+      },
+      {
+        "section": "Message receipt times",
+        "source": "S2 and S3",
+        "description": "Receipt timestamps at bottoms of resolved message bubbles; cropped out with the private links."
+      }
+    ],
+    "sha256": "7a64b51a97e9a93ae6a9f35d786b11054cb524ec103fad9c89fef36a065e9039"
+  }
+}

@@ -18,6 +18,9 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import slim_incidents
+
 STATE = Path.home() / "network" / "state"
 LOG = STATE / "grafana-alerts.jsonl"
 SEEN = STATE / "grafana-investigated.json"
@@ -29,9 +32,7 @@ LOG_MAX_BYTES, LOG_KEEP_DAYS = 1_000_000, 30
 
 
 def atomic_write(path, text):
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(text)
-    os.replace(tmp, path)
+    slim_incidents.atomic(path, text)
 
 
 def parse_ts(s):
@@ -58,7 +59,13 @@ def append_bounded(records, now):
                     keep.append(l)
             except (ValueError, KeyError, TypeError):
                 continue
-        lines = keep[-5000:]
+        lines, size = [], 0
+        for line in reversed(keep):
+            size += len(line.encode()) + 1
+            if size > LOG_MAX_BYTES * 3 // 4:
+                break
+            lines.append(line)
+        lines.reverse()
         atomic_write(LOG, "".join(l + "\n" for l in lines))
     return lines
 
@@ -102,6 +109,8 @@ def main():
             records.append({"ts": now.isoformat(timespec="seconds"), "status": "note",
                             "alertname": f"{len(alerts) - MAX_ALERTS} more alerts not logged",
                             "severity": None, "startsAt": None, "summary": "", "value": ""})
+        # Durable intake and fallback packet precede dispatch/dedupe commitment.
+        incident_ids, evidence_context = slim_incidents.record_events(records, root=STATE)
         lines = append_bounded(records, now)
 
         horizon = now - timedelta(hours=24)
@@ -133,7 +142,8 @@ def main():
     recent.reverse()
     text = "\n".join(f"- {r['alertname']} (severity {r['severity']}), firing since {r['startsAt']}\n"
                      f"  summary: {r['summary']}\n  values: {r['value']}" for r in recent)
-    print(json.dumps({"group": "slim", "alerts_text": text, "count": len(recent)}))
+    print(json.dumps({"group": "slim", "alerts_text": text, "count": len(recent),
+                      "incident_ids": ','.join(incident_ids), "evidence_context": evidence_context}))
 
 
 if __name__ == "__main__":

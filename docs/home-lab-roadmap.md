@@ -29,6 +29,30 @@ before adding services. Packet inspection needs a verified traffic capture path;
 a mirrored switch port and separate sensor NIC are possibilities, not current
 inventory. VLAN isolation also needs a suitable routing/firewall boundary.
 
+## Idea backlog
+
+### Application connection monitoring with Hermes — added 28 October 2026
+
+Evaluate free, open-source alternatives to Little Snitch:
+
+- [LuLu](https://objective-see.org/products/lulu.html) on the Mac for application
+  outbound-connection alerts and allow/block rules.
+- [OpenSnitch](https://github.com/evilsocket/opensnitch) on Slim for Linux
+  application connection events and firewall rules.
+- Feed supported connection-event summaries into the existing Slim monitoring
+  and Hermes incident workflow. Verify each tool's event/export interface first;
+  neither Hermes integration nor complete traffic-volume history is established.
+- Start with observation and baselining. Flag new application/destination pairs,
+  repeated denied connections and unusual volumes where the source provides them.
+  Use deterministic collection and filtering; ask Hermes to interpret meaningful
+  changes rather than every connection. Keep blocking changes subject to approval.
+- Complement existing Pi-hole DNS, host metrics, ASUS telemetry and syslog.
+  Coverage is limited to each monitored host; this does not provide whole-home
+  packet capture. Bound retention and keep application/domain details private.
+
+Status: idea only; no installation or configuration changes made. Check Slim's
+current OS, resources and existing telemetry before selecting or deploying a tool.
+
 ## What the router milestone establishes
 
 The [case study](https://github.com/markpierotti/asus-router-telemetry/blob/b43e8cf58fcdc16a43f93096a9d2bee0984a30b6/docs/case-study.md) documents the software, review-driven corrections

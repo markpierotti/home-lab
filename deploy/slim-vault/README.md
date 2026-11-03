@@ -64,12 +64,33 @@ python3 mirror.py          # one pull and receipt check
 python3 mirror.py --loop   # every ten minutes, for the initial eight-day review period
 ```
 
-The Mac loop is a detached user process in the recorded deployment, not a persistent
-login service. It does not survive reboot and cannot pull while the Mac is asleep or
-offline. Slim capture is independent and continues. Restart the loop after reboot;
-later pulls retrieve retained objects. Existing overwritten Mac files are preserved
-under `.sync-conflicts/`. Mac edits are not pushed back to Slim. iCloud sync is not
-an independently verified backup or restore guarantee.
+The current Mac deployment uses an existing Hermes job every thirty minutes,
+calling `~/.hermes/scripts/slim-vault-mirror.sh`; `cron-entry.sh` is its source.
+Copy `run-mirror.sh` beside the deployed mirror. These wrappers preserve failed
+exit status and do not perform prolonged iCloud hydration retries. `--loop` remains
+available for a foreground review period; do not run competing loops deliberately.
+An exclusive lock skips overlapping invocations without replacing their receipts.
+
+The pull uses a private local receiver under
+`~/Library/Application Support/SlimVaultMirror/receiver`, outside iCloud. The
+earlier `-W`-only repair still allowed openrsync to mmap an old iCloud file and
+failed on 29 October at 12:00. rsync now receives into this local folder; the
+publisher reads only local source files, writes new temporary destination files
+and replaces changed copies by rename. Existing overwritten Mac files are moved
+under `.sync-conflicts/` without reading their contents. Local-only files remain,
+and edits are not pushed to Slim. Metadata-matching copies are skipped. The capture
+status marker is published last. The local receiver consumes additional disk space
+and contains private evidence; do not put it in Git or treat it as a separate backup.
+
+The mirror checks capture age/errors and the referenced local manifest before
+publication; a good transfer does not prove complete capture history. Notifications
+distinguish copy failures, source-receipt problems and delivery errors.
+`--no-notify` supports manual checks.
+
+The Mac cannot pull while asleep or offline, and its scheduler must be running.
+Slim capture continues independently; later pulls retrieve retained objects.
+iCloud permissions may still prevent an unattended run, so inspect its receipt.
+iCloud sync is not an independently verified backup or restore guarantee.
 
 ## Evidence-backed learning
 

@@ -66,10 +66,13 @@ intrusions. Device-health telemetry does not provide packet visibility.
 
 ## Next validation sequence
 
-1. Complete fresh DNS/probe/scrape and alert-state checks; connect Telegram and
-   test delivery. Add an external check for a complete Slim outage.
-2. Confirm a scheduled nightly backup and subsequent Mac pull, rehearse a restore,
-   and validate controlled host/router restarts, power recovery and longer operation.
+1. ~~Telegram alert delivery and external outage check.~~ Done and validated 13 Nov
+   ([record](slim-alerts-20261018.md)).
+2. Nightly backup and Mac pull: Slim's nightly backup is confirmed (14 kept). The Mac
+   pull was lost in the Nov rebuild and reinstalled 13 Nov (14 archives pulled and
+   checked; Grafana and Pi-hole databases pass integrity checks). Still to do: a full
+   restore rehearsal onto a clean host, controlled host/router restarts, power
+   recovery and longer operation.
 3. Install Hermes if still wanted, then plan USB storage and an isolated network
    lab. Establish where traffic can
    be observed before collecting captures or making visibility claims.

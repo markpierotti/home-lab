@@ -237,7 +237,7 @@ Grafana secrets, DNS history and device inventory.
 
 Do not overwrite netplan, SSH access, sudoers or firewall configuration wholesale
 on a headless host. Check access and a recovery path before each network change.
-No restore rehearsal has yet been recorded.
+A [partial archive and database check was recorded on 13 November 2026](slim-backup-validation-20261113.md). A full service or whole-host restore onto a clean machine remains untested.
 
 ## Rollback and outages
 

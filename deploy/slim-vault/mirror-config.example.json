@@ -1,0 +1,4 @@
+{
+  "ssh_target": "slim@192.0.2.20",
+  "vault_path": "~/Library/Mobile Documents/com~apple~CloudDocs/slim-telemetry"
+}

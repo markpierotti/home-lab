@@ -1,0 +1,18 @@
+{
+  "origin": "Existing Mark Pierotti Voltron learning-loop implementation, inspected 2026-10-20",
+  "adaptation": "Fresh Slim register; source evidence and studio data are not copied. No model calls or live network actions.",
+  "files": {
+    "loop.py": {
+      "origin_sha256": "c4213fea4a30db6c6df7ce633550e930fc9190e4d1b5af43f7e217a8ea52054a",
+      "adapted_sha256": "c4213fea4a30db6c6df7ce633550e930fc9190e4d1b5af43f7e217a8ea52054a"
+    },
+    "brain.py": {
+      "origin_sha256": "547a4ce6954202f0512c993cc50cf1d53dd3167cb9fd35b14be6a6a1ddeba52d",
+      "adapted_sha256": "0adc086fcd3863df361e65be29697ad614659b743a985e94827d0b5eb3978c0b"
+    },
+    "optimise.py": {
+      "origin_sha256": "2b21576762ed03a33cdfee3a007ea616f659b23301cd92e44412eda10e7567b2",
+      "adapted_sha256": "1ba1e1f7b1da3a603b9a06d95ab2efaab1a29a76e4462f1da622232ef9ec1b6d"
+    }
+  }
+}

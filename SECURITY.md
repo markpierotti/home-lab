@@ -33,3 +33,10 @@ runners, not production installation paths.
 Concrete boundary violations, command/path injection, credential disclosure, unsafe
 rollback, unbounded storage and misleading security status are reportable. Dated
 checks do not establish endurance, power-loss or whole-host restore readiness.
+
+The optional Slim vault preserves selected private evidence outside Git. Its capture
+helper requires root, uses SQLite-safe snapshots, reports failed sources and pauses
+at storage guards without deleting archives. Source objects are hashed; hashes do
+not authenticate events or make storage tamper-proof. Logs and transcripts remain
+untrusted data. The Mac mirror never synchronizes deletion and retains overwritten
+local copies. Learning records and model recommendations grant no live-change authority.

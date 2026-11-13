@@ -34,7 +34,7 @@ concurrent rotation or failed reads. Failed sources are recorded and the service
 exits unsuccessfully. SQLite `mode=ro` backup reads application data without changing
 rows; the cron directory write exception permits SQLite WAL shared-memory coordination.
 
-No archive expiry or automatic deletion is configured. At 2 GiB of raw archive
+No archive expiry or automatic deletion is configured. At 3 GiB of raw archive
 storage or less than 2 GiB free, capture pauses and preserves existing data. A new
 capacity/retention decision is required; the helper does not reclaim space silently.
 
@@ -123,6 +123,35 @@ sudo cat /var/lib/slim-telemetry-vault/capture-status.json
 sudo /usr/local/lib/slim-vault/capture.py verify
 sudo -u hermes python3 /var/lib/slim-telemetry-vault/learning-loop/loop.py report
 ```
+
+The active `agent.log` and `asus.log` start a new
+`log-base` on the first capture of each Brisbane day, on inode changes, or
+when the previous byte prefix no longer matches. Subsequent `log-append`
+records store only new bytes and link to the previous manifest for that
+source. Rotated files already matched by source discovery are still captured
+as whole files. For rename rotation, the whole rotated file preserves the unread tail while
+it remains available and within capture limits. A tail can be lost if the
+rotated file disappears before capture or rotation uses copytruncate.
+The collector rewrites `outcomes.jsonl` as a rolling window, so it remains a
+whole-file snapshot. The prefix check reads the whole active log, which remains
+subject to the 64 MiB source limit.
+
+`executions.db` and `state.db` use the first successful SQLite backup of each
+Brisbane day. Changes between snapshots can be missed. The manifest counts
+cadence skips under `deferred`.
+
+To reconstruct a log version, pass a manifest that recorded that source:
+
+```sh
+sudo /usr/local/lib/slim-vault/capture.py restore-log   "raw/captures/<date>/<capture>.json" /home/hermes/.hermes/logs/agent.log
+```
+
+Restoring checks byte ranges, object hashes and the resulting file hash.
+Keep every referenced manifest and object when retaining or copying a log
+chain. Historical manifests and objects are left as they were. If older objects
+were pruned from Slim, use the verified off-host copy for those references.
+The mirror copies files and checks the receipt. Its success does not establish
+chain completeness. `verify` checks hashes of objects present on disk.
 
 `capture.py read <sha256>` verifies and emits one private object. Restore a SQLite
 object into a new private file and run `PRAGMA quick_check`; do not overwrite a live

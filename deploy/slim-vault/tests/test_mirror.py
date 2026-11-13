@@ -51,6 +51,39 @@ class MirrorRegressionTests(unittest.TestCase):
         self.assertTrue(any(x.startswith('--backup-dir=.sync-conflicts/') for x in command))
         self.assertEqual(report['state'], 'ok')
 
+    def test_mirror_publishes_reconstructable_log_chain(self):
+        spec = importlib.util.spec_from_file_location(
+            'capture', Path(__file__).parents[1] / 'capture.py'
+        )
+        capture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(capture)
+        remote = self.root / 'remote'
+        remote.mkdir()
+        source = self.root / 'agent.log'
+        now = dt.datetime.now(dt.timezone.utc)
+        with patch.object(capture, 'MIN_FREE', 0):
+            source.write_bytes(b'base\n')
+            capture.capture(remote, self.root / 'catalog', [('log', source)], now)
+            source.write_bytes(b'base\nappend\n')
+            latest = capture.capture(
+                remote, self.root / 'catalog', [('log', source)],
+                now + dt.timedelta(microseconds=1),
+            )
+
+        def transfer(command, **kwargs):
+            shutil.copytree(remote, self.home / 'receiver', dirs_exist_ok=True)
+            return subprocess.CompletedProcess(command, 0, '', '')
+
+        with patch.object(mirror.subprocess, 'run', side_effect=transfer):
+            report = mirror.run_once(self.config, notifications=False)
+        self.assertEqual(report['state'], 'ok')
+        manifest = latest['manifest']
+        record = json.loads((self.dest / manifest).read_bytes())['records'][0]
+        self.assertEqual(record['kind'], 'log-append')
+        self.assertEqual(
+            capture.restore_log(self.dest, manifest, str(source)), b'base\nappend\n'
+        )
+
     def test_publish_never_reads_evicted_old_contents_and_preserves_them(self):
         stage = self.home / 'receiver'
         stage.mkdir()

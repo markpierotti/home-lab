@@ -10,13 +10,14 @@ import os
 from pathlib import Path
 import shutil
 import sqlite3
-import subprocess
+import stat
+import sys
 import tempfile
 import uuid
 
 VAULT = Path('/var/lib/slim-telemetry-vault')
 STATE = Path('/var/lib/slim-vault-capture')
-MAX_ARCHIVE = 2 * 1024**3
+MAX_ARCHIVE = 3 * 1024**3
 MIN_FREE = 2 * 1024**3
 MAX_FILE = 64 * 1024**2
 
@@ -54,6 +55,37 @@ def read_regular(path):
     if len(data) > MAX_FILE:
         raise RuntimeError('Source exceeds 64 MiB capture limit: '+str(path))
     return data
+
+def read_log(path, prior, day):
+    """Read a bounded snapshot and verify the entire previously seen prefix."""
+    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), 'rb') as f:
+        before = os.fstat(f.fileno())
+        if not stat.S_ISREG(before.st_mode):
+            raise RuntimeError('Log source is not a regular file')
+        if before.st_size > MAX_FILE:
+            raise RuntimeError('Log exceeds 64 MiB capture limit')
+        data = f.read(before.st_size)
+        after = os.fstat(f.fileno())
+        if len(data) != before.st_size or after.st_size < before.st_size:
+            raise RuntimeError('Log shrank during capture; retry on next run')
+        if after.st_size == before.st_size and after.st_mtime_ns != before.st_mtime_ns:
+            raise RuntimeError('Log changed during capture; retry on next run')
+    identity = [before.st_dev, before.st_ino]
+    end = len(data)
+    digest = hashlib.sha256(data).hexdigest()
+    prior = prior if isinstance(prior, dict) else {}
+    offset = prior.get('end', 0)
+    continuation = (
+        prior.get('day') == day and prior.get('identity') == identity
+        and offset <= end and hashlib.sha256(data[:offset]).hexdigest() == prior.get('file_sha256')
+    )
+    if continuation and offset == end:
+        return None, None, None
+    fields = {'offset': offset if continuation else 0, 'end': end, 'file_sha256': digest}
+    if continuation:
+        fields['previous_manifest'] = prior['manifest']
+    return data[fields['offset']:], fields, identity
+
 
 def sqlite_snapshot(path, work):
     dest = work/(uuid.uuid4().hex+'.db')
@@ -94,6 +126,12 @@ def sources():
         if p.exists(): result[str(p)]=('file',p)
     for p in [h/'state.db',h/'cron/executions.db',h/'cron/deliveries.db',h/'cron/notepad.db']:
         if p.exists(): result[str(p)]=('sqlite',p)
+    for path in [h/'logs/agent.log', Path('/var/log/asus/asus.log')]:
+        if str(path) in result:
+            result[str(path)] = ('log', path)
+    for path in [h/'state.db', h/'cron/executions.db']:
+        if str(path) in result:
+            result[str(path)] = ('sqlite-daily', path)
     return list(result.values())
 
 def archive_bytes(vault):
@@ -112,24 +150,54 @@ def capture(vault=VAULT, state=STATE, inputs=None, clock=None):
             raise RuntimeError('Storage guard paused capture; existing evidence was not deleted')
         previous=json.loads((state/'catalog.json').read_text()) if (state/'catalog.json').exists() else {}
         catalog=dict(previous)
-        manifest={'captured_at':now.isoformat(),'timezone':'Australia/Brisbane','records':[], 'errors':[], 'unchanged':0, 'coverage':'Selected sources only; absence is not proof of no event.'}
+        manifest={'captured_at':now.isoformat(),'timezone':'Australia/Brisbane','records':[], 'errors':[], 'unchanged':0, 'deferred':0, 'coverage':'Selected sources only; absence is not proof of no event.'}
+        manifest_path = vault/'raw'/'captures'/day/(stamp+'.json')
+        manifest_relative = str(manifest_path.relative_to(vault))
         with tempfile.TemporaryDirectory(prefix='sqlite-',dir=state) as td:
-            for kind,path in inputs if inputs is not None else sources():
+            for kind, path in inputs if inputs is not None else sources():
                 try:
-                    if path.is_symlink(): raise RuntimeError('Symlink source refused')
-                    data=sqlite_snapshot(path,Path(td)) if kind=='sqlite' else read_regular(path)
-                    digest=hashlib.sha256(data).hexdigest()
-                    if previous.get(str(path))==digest:
-                        manifest['unchanged']+=1; continue
-                    if used+len(data) > MAX_ARCHIVE:
+                    if path.is_symlink():
+                        raise RuntimeError('Symlink source refused')
+                    source = str(path)
+                    prior = previous.get(source)
+                    fields = {}
+                    if kind == 'log':
+                        data, fields, identity = read_log(path, prior, day)
+                        if data is None:
+                            manifest['unchanged'] += 1
+                            continue
+                        record_kind = 'log-append' if 'previous_manifest' in fields else 'log-base'
+                    elif kind == 'sqlite-daily':
+                        if isinstance(prior, dict) and prior.get('sqlite_day') == day:
+                            manifest['deferred'] += 1
+                            continue
+                        data = sqlite_snapshot(path, Path(td))
+                        record_kind = 'sqlite'
+                        fields = {'cadence': 'daily'}
+                    else:
+                        data = sqlite_snapshot(path, Path(td)) if kind == 'sqlite' else read_regular(path)
+                        record_kind = kind
+                        if prior == hashlib.sha256(data).hexdigest():
+                            manifest['unchanged'] += 1
+                            continue
+                    if used + len(data) > MAX_ARCHIVE:
                         raise RuntimeError('Archive budget would be exceeded; source deferred')
-                    digest,relative=put(vault,data)
-                    used+=len(gzip.compress(data,mtime=0))
-                    manifest['records'].append({'source':str(path),'kind':kind,'sha256':digest,'bytes':len(data),'object':relative})
-                    catalog[str(path)]=digest
+                    digest, relative = put(vault, data)
+                    used += len(gzip.compress(data, mtime=0))
+                    manifest['records'].append({
+                        'source': source, 'kind': record_kind, 'sha256': digest,
+                        'bytes': len(data), 'object': relative, **fields,
+                    })
+                    if kind == 'log':
+                        catalog[source] = {'day': day, 'identity': identity,
+                                           'end': fields['end'], 'file_sha256': fields['file_sha256'],
+                                           'manifest': manifest_relative}
+                    elif kind == 'sqlite-daily':
+                        catalog[source] = {'sqlite_day': day, 'sha256': digest}
+                    else:
+                        catalog[source] = digest
                 except Exception as e:
-                    manifest['errors'].append({'source':str(path),'error':str(e)})
-        manifest_path=vault/'raw'/'captures'/day/(stamp+'.json')
+                    manifest['errors'].append({'source': str(path), 'error': str(e)})
         atomic(manifest_path,json_bytes(manifest))
         digest=hashlib.sha256(manifest_path.read_bytes()).hexdigest()
         note=(f'---\ntitle: Capture {stamp}\ncreated: {day}\nupdated: {day}\ntype: summary\ntags: [slim, evidence]\nsources: [{str(manifest_path.relative_to(vault))}]\nconfidence: high\ncontested: false\ncontradictions: []\n---\n\n'
@@ -150,17 +218,69 @@ def capture(vault=VAULT, state=STATE, inputs=None, clock=None):
         if manifest['errors']: raise RuntimeError(f'{len(manifest["errors"])} sources failed; see capture-status.json')
         return report
 
+def restore_log(vault, manifest, source):
+    """Rebuild one log version and verify both the chunks and final file."""
+    chunks = []
+    visited = set()
+    expected_end = None
+    file_digest = None
+    while True:
+        relative = Path(manifest)
+        if (relative.is_absolute() or '..' in relative.parts
+                or relative.parts[:2] != ('raw', 'captures') or relative in visited):
+            raise ValueError('Invalid or repeated log manifest path')
+        visited.add(relative)
+        records = json.loads((vault/relative).read_bytes())['records']
+        matches = [record for record in records if record['source'] == source]
+        if len(matches) != 1 or matches[0]['kind'] not in ('log-base', 'log-append'):
+            raise ValueError('Manifest has no unique log record for this source')
+        record = matches[0]
+        offset, end = record['offset'], record['end']
+        if not 0 <= offset <= end <= MAX_FILE or (expected_end is not None and end != expected_end):
+            raise ValueError('Invalid or non-contiguous log range')
+        if file_digest is None:
+            file_digest = record['file_sha256']
+        digest = record['sha256']
+        if len(digest) != 64 or any(c not in '0123456789abcdef' for c in digest):
+            raise ValueError('Invalid log object digest')
+        data = gzip.decompress((vault/'raw/objects'/digest[:2]/(digest+'.gz')).read_bytes())
+        if (hashlib.sha256(data).hexdigest() != digest
+                or len(data) != end - offset or len(data) != record['bytes']):
+            raise ValueError('Log object failed integrity check')
+        chunks.append(data)
+        if record['kind'] == 'log-base':
+            if offset != 0:
+                raise ValueError('Log base must start at zero')
+            break
+        if offset == end:
+            raise ValueError('Empty log append')
+        expected_end = offset
+        manifest = record['previous_manifest']
+    data = b''.join(reversed(chunks))
+    if hashlib.sha256(data).hexdigest() != file_digest:
+        raise ValueError('Reconstructed log failed integrity check')
+    return data
+
+
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('command',choices=['capture','read','verify']);parser.add_argument('sha256',nargs='?');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('command',choices=['capture','read','verify','restore-log'])
+    parser.add_argument('sha256_or_manifest', nargs='?')
+    parser.add_argument('source', nargs='?')
+    args=parser.parse_args()
+    if args.command == 'restore-log':
+        if not args.sha256_or_manifest or not args.source:
+            parser.error('restore-log requires a vault-relative manifest path and source path')
+        sys.stdout.buffer.write(restore_log(VAULT, args.sha256_or_manifest, args.source))
+        return
     if args.command=='capture':
         if os.geteuid()!=0: raise PermissionError('Capture requires root; read and verify do not')
         capture();return
     if args.command=='read':
-        digest=args.sha256 or ''
+        digest=args.sha256_or_manifest or ''
         if len(digest)!=64 or any(c not in '0123456789abcdef' for c in digest): parser.error('A lowercase SHA-256 is required')
         data=gzip.decompress((VAULT/'raw/objects'/digest[:2]/(digest+'.gz')).read_bytes())
         if hashlib.sha256(data).hexdigest()!=digest: raise RuntimeError('Integrity failure')
-        import sys;sys.stdout.buffer.write(data);return
+        sys.stdout.buffer.write(data);return
     count=0
     for p in (VAULT/'raw/objects').glob('*/*.gz'):
         if hashlib.sha256(gzip.decompress(p.read_bytes())).hexdigest()!=p.stem: raise RuntimeError('Integrity failure: '+str(p))
@@ -171,6 +291,6 @@ if __name__=='__main__':
     os.umask(0o027)
     try: main()
     except Exception as error:
-        if VAULT.exists():
+        if sys.argv[1:2] == ['capture'] and VAULT.exists():
             atomic(VAULT/'capture-error.json',json_bytes({'at':dt.datetime.now(dt.timezone.utc).isoformat(),'error':str(error)}))
         raise

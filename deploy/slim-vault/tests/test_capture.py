@@ -56,4 +56,81 @@ class CaptureTests(unittest.TestCase):
         restored.write_bytes(gzip.decompress(obj.read_bytes()))
         with sqlite3.connect(restored) as r: self.assertEqual(r.execute('SELECT value FROM events').fetchone()[0],'committed')
 
+    def capture_at(self, kind, minute, day=13):
+        clock = datetime.datetime(2026, 11, day, 1, minute, tzinfo=datetime.timezone.utc)
+        with patch.object(capture, 'MIN_FREE', 0):
+            report = capture.capture(self.vault, self.state, [(kind, self.source)], clock)
+        return report['manifest'], json.loads((self.vault/report['manifest']).read_bytes())
+
+    def test_log_append_restores_exact_bytes_without_rewriting_legacy_manifest(self):
+        old, _ = self.capture_at('file', 0)
+        legacy = (self.vault/old).read_bytes()
+        base, _ = self.capture_at('log', 10)
+        self.source.write_bytes(b'original evidence\nnext\x00')
+        path, manifest = self.capture_at('log', 20)
+        record = manifest['records'][0]
+        self.assertEqual(record['kind'], 'log-append')
+        self.assertEqual(record['previous_manifest'], base)
+        self.assertEqual(gzip.decompress((self.vault/record['object']).read_bytes()), b'\nnext\x00')
+        self.assertEqual(capture.restore_log(self.vault, path, str(self.source)), self.source.read_bytes())
+        self.assertEqual((self.vault/old).read_bytes(), legacy)
+        base_record = json.loads((self.vault/base).read_bytes())['records'][0]
+        (self.vault/base_record['object']).unlink()
+        with self.assertRaises(FileNotFoundError):
+            capture.restore_log(self.vault, path, str(self.source))
+
+    def test_rotation_regrowth_and_new_day_start_independent_bases(self):
+        self.capture_at('log', 0)
+        self.source.rename(self.root/'source.txt.1')
+        self.source.write_bytes(b'original evidence with more bytes')
+        _, rotated = self.capture_at('log', 10)
+        self.assertEqual(rotated['records'][0]['kind'], 'log-base')
+        self.source.write_bytes(b'a replacement prefix longer than the previous log')
+        _, rewritten = self.capture_at('log', 20)
+        self.assertEqual(rewritten['records'][0]['kind'], 'log-base')
+        _, next_day = self.capture_at('log', 0, day=14)
+        self.assertEqual(next_day['records'][0]['kind'], 'log-base')
+
+    def test_rotated_whole_file_preserves_tail_across_midnight(self):
+        self.capture_at('log', 50)
+        self.source.write_bytes(b'original evidence\nunread tail')
+        rotated = self.source.with_suffix('.1')
+        self.source.rename(rotated)
+        self.source.write_bytes(b'new active log')
+        clock = datetime.datetime(2026, 11, 13, 14, tzinfo=datetime.timezone.utc)
+        with patch.object(capture, 'MIN_FREE', 0):
+            report = capture.capture(
+                self.vault, self.state, [('log', self.source), ('file', rotated)], clock
+            )
+        manifest = json.loads((self.vault/report['manifest']).read_bytes())
+        active, backup = manifest['records']
+        self.assertEqual(active['kind'], 'log-base')
+        self.assertEqual(backup['kind'], 'file')
+        self.assertEqual(
+            gzip.decompress((self.vault/backup['object']).read_bytes()),
+            b'original evidence\nunread tail',
+        )
+
+    def test_budget_failure_does_not_advance_log_cursor(self):
+        base, _ = self.capture_at('log', 0)
+        self.source.write_bytes(b'original evidence and new bytes')
+        with patch.object(capture, 'MAX_ARCHIVE', capture.archive_bytes(self.vault) + 1):
+            with self.assertRaises(RuntimeError):
+                self.capture_at('log', 10)
+        path, manifest = self.capture_at('log', 20)
+        self.assertEqual(manifest['records'][0]['previous_manifest'], base)
+        self.assertEqual(capture.restore_log(self.vault, path, str(self.source)), self.source.read_bytes())
+
+    def test_daily_sqlite_skips_same_day_and_captures_next_day(self):
+        with sqlite3.connect(self.source.with_suffix('.db')) as db:
+            db.execute('CREATE TABLE evidence (value TEXT)')
+        self.source = self.source.with_suffix('.db')
+        self.assertEqual(len(self.capture_at('sqlite-daily', 0)[1]['records']), 1)
+        with sqlite3.connect(self.source) as db:
+            db.execute("INSERT INTO evidence VALUES ('new')")
+        same_day = self.capture_at('sqlite-daily', 10)[1]
+        self.assertEqual(same_day['deferred'], 1)
+        self.assertEqual(same_day['records'], [])
+        self.assertEqual(len(self.capture_at('sqlite-daily', 0, day=14)[1]['records']), 1)
+
 if __name__=='__main__': unittest.main()

@@ -89,3 +89,9 @@ missing-heartbeat path only; it is not a real power, network or gateway failure.
 documents Telegram settings and environment interpolation.
 [Healthchecks Telegram integration](https://healthchecks.io/integrations/telegram/)
 documents the independent hosted notification path.
+
+## Later observations
+
+[20 October 2026: ASUS reboot alert likely false positive](incidents/20261020-asus-false-reboot.md)
+records a reported one-second boot-time shift, the notification timeline and an open
+review of reboot detection. No revised alert expression has been validated or deployed.

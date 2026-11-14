@@ -19,6 +19,7 @@ acceptance observations, not a whole-host disaster-recovery guarantee.
 - [Roadmap](docs/home-lab-roadmap.md)
 - [Operations team plan](docs/plans/autonomous-operations-20261020.md)
 - [Monitoring and triage coverage review](docs/plans/operations-coverage-20261020.md)
+- [Incident observations](docs/incidents/README.md)
 - [Repository split and source provenance](docs/repository-split-20261019.md)
 
 ## Collector dependency

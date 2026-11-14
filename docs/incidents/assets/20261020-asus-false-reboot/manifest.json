@@ -1,0 +1,42 @@
+{
+  "source": "owner-provided Telegram screenshot captured 2026-10-20 05:52:52",
+  "source_size_pixels": [
+    1094,
+    1170
+  ],
+  "source_sha256": "5215812e116dbb5f11a799c4e09f8bed4571eb32c829c3443198235c88f38fca",
+  "processing": "Rectangular native sips crops only. No resizing, text changes, generative edits or redaction overlays.",
+  "coordinates": "Origin top-left; x, y, width, height in source pixels. Private Grafana URLs excluded by crop bounds.",
+  "crops": [
+    {
+      "file": "alert-firing.png",
+      "rectangle": [
+        38,
+        62,
+        1020,
+        140
+      ],
+      "sha256": "c699b599b18b553661edeadb95edf3e4d6e4f398bf475e72863afb2e3f23ba34"
+    },
+    {
+      "file": "operator-diagnosis.png",
+      "rectangle": [
+        38,
+        295,
+        1020,
+        658
+      ],
+      "sha256": "0f63dc4cd640b16e3b3caee26b8d165040cfa661451b4bb7a204298caa363c26"
+    },
+    {
+      "file": "alert-resolved.png",
+      "rectangle": [
+        38,
+        973,
+        1020,
+        70
+      ],
+      "sha256": "0219b88a952f0e0e28db22ff6264f12cb911443e250f19375443274dfe07976d"
+    }
+  ]
+}

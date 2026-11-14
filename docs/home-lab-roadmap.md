@@ -1,7 +1,11 @@
-# Home Lab & Security Operations
+# Home Lab Operations
 
 I’m building a home networking and security lab to investigate how devices behave,
 how failures become visible, and how segmentation contains unwanted traffic.
+The goal is a coordinated operations team spanning systems administration, network
+and wireless engineering, DNS, reliability, backup/recovery, applications and
+security—not only a SOC. Roles, permissions and evidence are planned in the
+[autonomous operations design](plans/autonomous-operations-20261020.md).
 ASUS Router Telemetry has supervised hardware trials and automated regression
 tests. Slim now runs unattended collection, DNS filtering and monitoring. Network
 detection and segmentation exercises are later stages.
@@ -23,12 +27,13 @@ and validation before it is described as working.
 | Project Limbo | Simulated noisy IoT traffic, segmentation, visibility and containment measurements | Planned; no completed lab results |
 | Security-operations exercises | Detection rules, alert triage, investigation records and response playbooks | Planned; no deployed SOC claimed |
 
-Unbound, router syslog intake and the external heartbeat are covered by the
-existing deployment. NetAlertX, Loki and Suricata/Zeek remain candidates, not
-completed milestones. Assess overlap with existing monitoring and measure host resources
-before adding services. Packet inspection needs a verified traffic capture path;
-a mirrored switch port and separate sensor NIC are possibilities, not current
-inventory. VLAN isolation also needs a suitable routing/firewall boundary.
+Unbound, router syslog intake, Hermes and the external heartbeat are covered by
+the existing deployment, with dated records in this repository. NetAlertX, Loki
+and Suricata/Zeek remain candidates, not completed milestones. Assess overlap with
+existing monitoring and measure host resources before adding services. Packet
+inspection needs a verified traffic capture path; a mirrored switch port and
+separate sensor NIC are possibilities, not current inventory. VLAN isolation also
+needs a suitable routing/firewall boundary.
 
 ## Idea backlog
 
@@ -74,19 +79,24 @@ intrusions. Device-health telemetry does not provide packet visibility.
    checked; Grafana and Pi-hole databases pass integrity checks). Still to do: a full
    restore rehearsal onto a clean host, controlled host/router restarts, power
    recovery and longer operation.
-3. Extend validation of the existing restricted Hermes operator, then plan USB
-   storage and an isolated network lab. Establish where traffic can be observed
-   before collecting captures or making visibility claims.
-4. Run bounded simulated IoT traffic and compare shared-segment behavior with
+3. Reconcile current live schedules, enabled checks, alert rules and delivery with
+   reviewed source. Complete the missing clock-health, Wi-Fi baseline, degradation
+   and checker-health coverage described in the
+   [20 October review](plans/operations-coverage-20261020.md). Keep unavailable data
+   explicit and use shadow observations before changing alert behavior.
+4. Extend validation of the existing restricted Hermes operator, then introduce the
+   operations lead and scoped read-only specialists through the
+   [phased team plan](plans/autonomous-operations-20261020.md). Add supervised repair
+   only after a restricted executor, independent verification, explicit approval
+   and exercised rollback exist. No new automatic repair is authorised here.
+5. Plan USB storage and an isolated network lab. Establish where traffic can be
+   observed before collecting captures or making visibility claims.
+6. Run bounded simulated IoT traffic and compare shared-segment behavior with
    isolation and detection. Record packet/byte counts, capture loss, delivery
-   across boundaries and alert timing under the documented conditions.
-5. Add detections and investigation/response exercises, preserving both successful
-   outcomes and failures.
-
-The [dated deployment record](slim-deployment-20261017.md),
-[sanitized source examples](../deploy/slim/README.md) and
-[operations runbook](slim-operations.md) describe the current host. Earlier bench
-acceptance remains attached to its original versions.
+   across boundaries and alert timing under documented conditions.
+7. Expand security detection/response, platform maintenance, capacity planning and
+   recovery exercises as measured capability permits. Preserve successful outcomes,
+   failures and remaining human responsibilities.
 
 Project Limbo’s visual theme can make the topology memorable, while its technical
 view must show the actual trust boundaries and measurements. Additional VLANs

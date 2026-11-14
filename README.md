@@ -18,6 +18,8 @@ acceptance observations, not a whole-host disaster-recovery guarantee.
 - [Incident remedy deployment and limits](docs/slim-remedies-20261022.md)
 - [Dashboard acceptance](docs/slim-dashboards-20261019.md)
 - [Roadmap](docs/home-lab-roadmap.md)
+- [Operations team plan](docs/plans/autonomous-operations-20261020.md)
+- [Monitoring and triage coverage review](docs/plans/operations-coverage-20261020.md)
 - [Incident observations](docs/incidents/README.md)
 - [Repository split and source provenance](docs/repository-split-20261019.md)
 

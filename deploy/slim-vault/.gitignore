@@ -1,0 +1,11 @@
+config.json
+*.db
+*.db-*
+*.tar.gz
+*.log
+learning-loop/data/
+learning-loop/input/
+__pycache__/
+vault-seed/raw/
+vault-seed/Inbox/
+.sync-conflicts/

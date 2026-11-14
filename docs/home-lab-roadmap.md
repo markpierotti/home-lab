@@ -16,18 +16,43 @@ and validation before it is described as working.
 | ASUS Router Telemetry | Device-health collection, management-link failure evidence and cleanup accountability | Collector 1.6.2 is maintained upstream and pinned in this repository |
 | Slim Linux host | External collection, DNS and service monitoring | Commissioned 17 October; services checked active on 19 October, with one-minute collection |
 | Pi-hole and monitoring | DNS filtering; Prometheus/Grafana dashboards and alert evaluation | Running; three custom dashboards, 16 rules, Telegram delivery and external heartbeat |
-| Backup and recovery | Local archives and off-host copies | Scheduled backup and Mac pull configuration; whole-host restore rehearsal pending |
+| Backup and recovery | Local archives and off-host copies | Mac pull restored and 14 archives checked on 13 November; database integrity checks passed; full restore pending ([record](slim-backup-validation-20261113.md)) |
+| Private evidence vault | Preserve selected operational records and a one-way Mac reading copy | Capture and mirror tooling, log deltas, daily SQLite snapshots and a 3 GiB archive guard; no complete-history or backup guarantee |
 | Hermes | AI-assisted investigation on the Linux host | Running as a restricted system service; failure-correlation acceptance remains limited |
 | ASUS USB NAS | Shared USB storage | Planned; AP mode is in use, storage performance unvalidated |
 | Project Limbo | Simulated noisy IoT traffic, segmentation, visibility and containment measurements | Planned; no completed lab results |
 | Security-operations exercises | Detection rules, alert triage, investigation records and response playbooks | Planned; no deployed SOC claimed |
 
-Other previously discussed candidates are Unbound, NetAlertX, router syslog intake,
-Loki, Suricata/Zeek and an external availability checker. They are not installed by
-this milestone. Assess overlap with existing monitoring and measure host resources
+Unbound, router syslog intake and the external heartbeat are covered by the
+existing deployment. NetAlertX, Loki and Suricata/Zeek remain candidates, not
+completed milestones. Assess overlap with existing monitoring and measure host resources
 before adding services. Packet inspection needs a verified traffic capture path;
 a mirrored switch port and separate sensor NIC are possibilities, not current
 inventory. VLAN isolation also needs a suitable routing/firewall boundary.
+
+## Idea backlog
+
+### Application connection monitoring with Hermes — added 28 October 2026
+
+Evaluate free, open-source alternatives to Little Snitch:
+
+- [LuLu](https://objective-see.org/products/lulu.html) on the Mac for application
+  outbound-connection alerts and allow/block rules.
+- [OpenSnitch](https://github.com/evilsocket/opensnitch) on Slim for Linux
+  application connection events and firewall rules.
+- Feed supported connection-event summaries into the existing Slim monitoring
+  and Hermes incident workflow. Verify each tool's event/export interface first;
+  neither Hermes integration nor complete traffic-volume history is established.
+- Start with observation and baselining. Flag new application/destination pairs,
+  repeated denied connections and unusual volumes where the source provides them.
+  Use deterministic collection and filtering; ask Hermes to interpret meaningful
+  changes rather than every connection. Keep blocking changes subject to approval.
+- Complement existing Pi-hole DNS, host metrics, ASUS telemetry and syslog.
+  Coverage is limited to each monitored host; this does not provide whole-home
+  packet capture. Bound retention and keep application/domain details private.
+
+Status: idea only; no installation or configuration changes made. Check Slim's
+current OS, resources and existing telemetry before selecting or deploying a tool.
 
 ## What the router milestone establishes
 
@@ -42,13 +67,16 @@ intrusions. Device-health telemetry does not provide packet visibility.
 
 ## Next validation sequence
 
-1. Complete fresh DNS/probe/scrape and alert-state checks; connect Telegram and
-   test delivery. Add an external check for a complete Slim outage.
-2. Confirm a scheduled nightly backup and subsequent Mac pull, rehearse a restore,
-   and validate controlled host/router restarts, power recovery and longer operation.
-3. Install Hermes if still wanted, then plan USB storage and an isolated network
-   lab. Establish where traffic can
-   be observed before collecting captures or making visibility claims.
+1. ~~Telegram alert delivery and external outage check.~~ Done and validated 13 Nov
+   ([record](slim-alerts-20261018.md)).
+2. Nightly backup and Mac pull: Slim's nightly backup is confirmed (14 kept). The Mac
+   pull was lost in the Nov rebuild and reinstalled 13 Nov (14 archives pulled and
+   checked; Grafana and Pi-hole databases pass integrity checks). Still to do: a full
+   restore rehearsal onto a clean host, controlled host/router restarts, power
+   recovery and longer operation.
+3. Extend validation of the existing restricted Hermes operator, then plan USB
+   storage and an isolated network lab. Establish where traffic can be observed
+   before collecting captures or making visibility claims.
 4. Run bounded simulated IoT traffic and compare shared-segment behavior with
    isolation and detection. Record packet/byte counts, capture loss, delivery
    across boundaries and alert timing under the documented conditions.

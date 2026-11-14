@@ -73,6 +73,16 @@ The rollback path and private host details are kept in the operator's local reco
 No router, gateway, SSH, firewall, or household DNS configuration changes are part
 of this milestone. The gateway model was confirmed by the operator as Archer AX53.
 
+## Outage validation — 2026-11-13
+
+With the operator's approval, `slim-heartbeat.timer` was stopped at 19:52 AEST (last
+ping 19:50:03) to simulate a complete Slim outage; a transient systemd timer was set
+to restart it automatically. The operator confirmed the Healthchecks "down" message
+arrived on Telegram about 15 minutes after the last ping, matching the 5-minute period
+plus 10-minute grace. The timer was running again by 20:15 and the first ping
+afterwards reported DNS, Prometheus and Grafana healthy. This exercises the external
+missing-heartbeat path only; it is not a real power, network or gateway failure.
+
 ## Sources
 
 [Grafana alerting file provisioning](https://grafana.com/docs/grafana/latest/alerting/set-up/provision-alerting-resources/file-provisioning/)

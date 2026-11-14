@@ -31,6 +31,17 @@ dashboards and screenshots private unless explicitly sanitized.
 
 ## Collector hard stop or stale samples
 
+### Known digest findings
+
+The [20 October investigation](slim-digest-findings-20261020.md) confirmed a false
+reboot classification after a one-second boot-timestamp change with rising uptime,
+and a known phone labelled unknown after its IP differed from the inventory.
+Both fixes remain pending. Corroborate reboot alerts with saved uptime/counter
+evidence and unknown-client labels with current address-to-MAC records; do not
+infer a device outage or unfamiliar device from these labels alone.
+
+### Collector recovery
+
 Inspect `systemctl status rtax-collector` and its journal before restarting.
 Compare the configured host-key file and reporter digest against separately trusted
 records. Establish a changed router identity through a trusted channel; do not
@@ -226,7 +237,7 @@ Grafana secrets, DNS history and device inventory.
 
 Do not overwrite netplan, SSH access, sudoers or firewall configuration wholesale
 on a headless host. Check access and a recovery path before each network change.
-No restore rehearsal has yet been recorded.
+A [partial archive and database check was recorded on 13 November 2026](slim-backup-validation-20261113.md). A full service or whole-host restore onto a clean machine remains untested.
 
 ## Rollback and outages
 

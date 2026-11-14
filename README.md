@@ -11,6 +11,8 @@ regression tests. ASUS logs use a persistent filesystem with a fixed 256 MiB bud
 exhaustion and recovery were checked in isolated Linux namespaces. These are dated
 acceptance observations, not a whole-host disaster-recovery guarantee.
 
+- [Project overview and portfolio copy](docs/portfolio-copy.md)
+- [13 November backup validation](docs/slim-backup-validation-20261113.md)
 - [Deployment examples](deploy/slim/README.md)
 - [Operations and rollback](docs/slim-operations.md)
 - [Dashboard acceptance](docs/slim-dashboards-20261019.md)
@@ -45,3 +47,11 @@ documented in the operations runbook and never targets the production listener.
 
 Examples use documentation addresses. Real credentials, private device inventory,
 backups, DNS history and rendered Pi-hole screenshots must stay private.
+
+## Private operational memory
+
+The optional [Slim telemetry vault](deploy/slim-vault/README.md) preserves selected
+Hermes and monitoring evidence before live retention removes it, with a separate
+Obsidian reading copy and an evidence-backed learning recorder. Runtime records
+and private settings stay outside this repository. See the
+[20 October installation record](docs/slim-vault-20261020.md).

@@ -6,7 +6,7 @@ LC_ALL=C
 export LC_ALL
 DEST="$HOME/Backups/slim"
 KEEP=30
-SSH="ssh -i $HOME/.ssh/slim_backup -o IdentitiesOnly=yes -o IdentityAgent=none -o BatchMode=yes -o ConnectTimeout=10 slim@192.0.2.10"
+SSH="ssh -n -i $HOME/.ssh/slim_backup -o IdentitiesOnly=yes -o IdentityAgent=none -o BatchMode=yes -o ConnectTimeout=10 slim@192.0.2.10"
 mkdir -p "$DEST"
 list=$($SSH list) || { echo "$(date): slim unreachable" >&2; exit 1; }
 printf '%s\n' "$list" | while IFS= read -r f; do

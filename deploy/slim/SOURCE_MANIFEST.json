@@ -34,6 +34,10 @@
     {
       "source": "2026-11-13 Mac backup-pull restoration, reviewed 2026-11-14",
       "includes": "ssh -n correction so archive downloads cannot consume the filename loop; publication checksum refreshed"
+    },
+    {
+      "source": "2026-11-14 read-only comparison with live Slim operator and alert-rule files",
+      "includes": "sanitized adaptation of the operator instructions and live router-rebooted summary wording; household inventory generalized"
     }
   ],
   "reconstructions": [
@@ -59,7 +63,7 @@
     "etc/default/prometheus-node-exporter": "4afa09e75e2b554c9ff3547f263cefcd4af765cde02d85add6d8882509d6f803",
     "etc/grafana/grafana.ini.example": "1ab6afdb2edd272f2021cc51bf03b3c8f0f501c72779661e3ece7a6794510657",
     "etc/grafana/provisioning/alerting/slim-notifications.yaml": "7800b8190d73625066a04b04a66921be98259a96a403effe7e4b843a61fa8621",
-    "etc/grafana/provisioning/alerting/slim-rules.yaml": "bac503e83fa2779383d82339773fc7deab48d2be5411b23a34eb0ba37f614066",
+    "etc/grafana/provisioning/alerting/slim-rules.yaml": "be0a6ae73548429a5a64910d2b6772515d4ff45bab0abb9866316608f2942dfb",
     "etc/grafana/provisioning/dashboards/slim.yaml": "c630db4eb2392163fe77b78980b486566564711cee8cf724981f9f2cd8168046",
     "etc/grafana/provisioning/datasources/prometheus.yaml": "d1e7c59ffa370e616c798288bc8373a0129aa947120517853181dd94acfb5e41",
     "etc/logrotate.d/asus-remote": "35ae5461586afd345d60a540f04798c2b44d7bf29077c0b68565296c09e1bb29",
@@ -85,7 +89,7 @@
     "etc/systemd/system/slim-incident-status.timer": "17010a0705995b0427aba52615aad9dbabf11d90cf3cd3e3d66e146e392e0d62",
     "etc/systemd/system/var-log-asus.mount": "ef0bae69ca09526423d99023708bec21e2dba45d0d8c92c20f4ad0bd3796f6b0",
     "etc/unbound/unbound.conf.d/pi-hole.conf": "883401ad7937590334da48761dc666a36548dc564fdfb77487896e98dd9bc189",
-    "hermes/SOUL.md": "e3e3a1ef3933bec410a4ad5e3eee67fbda0690425d496158d95c88287c7674ea",
+    "hermes/SOUL.md": "2c5b674c27e9fa7b2c9c652ee0181065a0038c2dbfa5557b25aab9e36374108f",
     "hermes/config.overlay.yaml": "2c99a9cb87231c95122a03702958985f7973a2523b7b20fbf2b1d5b49a7395ae",
     "hermes/hooks/slim-incidents/HOOK.yaml": "eecabb975ef9c532844f012390e89025d8f2e625ee6011c47d04764643158951",
     "hermes/hooks/slim-incidents/handler.py": "54270232a3711931d6525d13cc7e4c7d6b16e00d8ea6172fd7c0bdf0b59a15c8",

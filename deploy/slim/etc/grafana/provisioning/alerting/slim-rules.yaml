@@ -612,7 +612,7 @@
      "noDataState": "NoData",
      "execErrState": "Error",
      "annotations": {
-      "summary": "A decrease in fresh ASUS uptime samples was observed within 15 minutes, consistent with a restart. Corroborate router logs; a boot-time clock shift alone does not trigger this rule. Missing/unhealthy telemetry is No Data, not recovery."
+      "summary": "ASUS restart monitoring: ASUS uptime reset detected indicates a decrease in fresh uptime samples within 15 minutes; corroborate router logs. DatasourceNoData indicates missing or unhealthy telemetry and does not establish a restart. A boot-time clock shift alone does not trigger the uptime-reset rule."
      },
      "labels": {
       "severity": "warning"

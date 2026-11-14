@@ -36,9 +36,14 @@ dashboards and screenshots private unless explicitly sanitized.
 The [20 October investigation](slim-digest-findings-20261020.md) confirmed a false
 reboot classification after a one-second boot-timestamp change with rising uptime,
 and a known phone labelled unknown after its IP differed from the inventory.
-Both fixes remain pending. Corroborate reboot alerts with saved uptime/counter
-evidence and unknown-client labels with current address-to-MAC records; do not
-infer a device outage or unfamiliar device from these labels alone.
+The Home Lab alert rule was replaced on 22 October: `router-rebooted` now reports
+**ASUS uptime reset detected** from guarded uptime decreases and treats missing
+evidence as No Data ([remedy record](slim-remedies-20261022.md)). The 14 November
+read-only comparison recorded the live rule's summary wording. The remedy record
+documents the 22 October hook and timer checks. The upstream collector's own reboot
+classification and unknown-client labelling remain pending. Corroborate restart alerts with fresh
+uptime and router logs, and unknown-client labels with current address-to-MAC
+records; do not infer a device outage or unfamiliar device from these labels alone.
 
 ### Collector recovery
 

@@ -1,0 +1,19 @@
+[Unit]
+Description=Reconcile private Slim incident receipts without model calls
+
+[Service]
+Type=oneshot
+User=hermes
+Group=hermes
+ExecStart=/usr/bin/python3 /home/hermes/.hermes/scripts/slim_incidents.py
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=tmpfs
+BindReadOnlyPaths=/home/hermes/.hermes/scripts
+BindPaths=/home/hermes/network/state
+ReadWritePaths=/home/hermes/network/state /var/lib/slim-telemetry-vault/Inbox
+PrivateTmp=yes
+PrivateDevices=yes
+CapabilityBoundingSet=
+UMask=0077
+TimeoutStartSec=20

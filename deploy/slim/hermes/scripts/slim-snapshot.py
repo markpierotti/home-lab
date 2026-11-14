@@ -8,10 +8,15 @@ sources: Prometheus on loopback, systemd, and Hermes' own state files.
 import json
 import subprocess
 import time
+import math
+import sys
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import slim_incidents
 
 PROM = "http://127.0.0.1:9090/api/v1/query"
 NET = Path.home() / "network"
@@ -31,7 +36,8 @@ def q(expr):
 def val(expr, default=None):
     r = q(expr)
     try:
-        return float(r[0]["value"][1])
+        value = float(r[0]["value"][1])
+        return value if math.isfinite(value) else default
     except (IndexError, KeyError, ValueError):
         return default
 
@@ -77,6 +83,13 @@ def recent_jsonl(path, hours=24):
 
 def main():
     print(f"SNAPSHOT {datetime.now().astimezone():%a %d %b %Y %H:%M %Z}")
+
+    print("\n[Incident receipts]")
+    try:
+        pending = slim_incidents.reconcile()
+        print(json.dumps(pending[-10:], ensure_ascii=False) if pending else '- no pending records in ledger')
+    except Exception as e:
+        print('- UNKNOWN: incident receipt checker failed: ' + type(e).__name__)
 
     print("\n[Probes: up now / uptime over 24h]")
     for r in q('probe_success'):

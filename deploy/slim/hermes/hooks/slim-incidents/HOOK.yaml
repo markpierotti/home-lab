@@ -1,0 +1,3 @@
+name: slim-incidents
+description: Persist bounded incident lifecycle observations independently of the model
+events: [agent:start, agent:step, agent:end]

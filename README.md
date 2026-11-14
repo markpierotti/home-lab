@@ -15,6 +15,7 @@ acceptance observations, not a whole-host disaster-recovery guarantee.
 - [13 November backup validation](docs/slim-backup-validation-20261113.md)
 - [Deployment examples](deploy/slim/README.md)
 - [Operations and rollback](docs/slim-operations.md)
+- [Incident remedy deployment and limits](docs/slim-remedies-20261022.md)
 - [Dashboard acceptance](docs/slim-dashboards-20261019.md)
 - [Roadmap](docs/home-lab-roadmap.md)
 - [Operations team plan](docs/plans/autonomous-operations-20261020.md)

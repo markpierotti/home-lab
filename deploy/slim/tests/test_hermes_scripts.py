@@ -185,7 +185,9 @@ class GrafanaAlertTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         state = Path(self.tmp.name)
         self.patches = [patch.object(ga, 'STATE', state), patch.object(ga, 'LOG', state / 'alerts.jsonl'),
-                        patch.object(ga, 'SEEN', state / 'seen.json'), patch.object(ga, 'LOCK', state / 'lock')]
+                        patch.object(ga, 'SEEN', state / 'seen.json'), patch.object(ga, 'LOCK', state / 'lock'),
+                        patch.object(ga.slim_incidents, 'capture_evidence', return_value={'status': 'fixture', 'metrics': []}),
+                        patch.object(ga.slim_incidents, 'VAULT', state / 'unavailable-vault')]
         for p in self.patches:
             p.start()
 

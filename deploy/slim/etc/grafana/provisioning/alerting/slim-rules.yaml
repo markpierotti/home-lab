@@ -570,7 +570,7 @@
     },
     {
      "uid": "router-rebooted",
-     "title": "ASUS router rebooted",
+     "title": "ASUS uptime reset detected",
      "condition": "B",
      "data": [
       {
@@ -582,7 +582,7 @@
        "datasourceUid": "prometheus",
        "model": {
         "refId": "A",
-        "expr": "changes(rtax_router_boot_time_seconds[15m])",
+        "expr": "resets(rtax_router_uptime_seconds[15m]) and on(job,instance) (up{job=\"router\"} == 1) and on(job,instance) (rtax_exporter_up == 1) and on(job,instance) (rtax_last_attempt_success == 1) and on(job,instance) ((time() - rtax_last_sample_timestamp_seconds) >= 0) and on(job,instance) ((time() - rtax_last_sample_timestamp_seconds) <= 180) and on(job,instance) (count_over_time(rtax_router_uptime_seconds[15m]) >= 2) and on(job,instance) (rtax_router_uptime_seconds >= 0) and on(job,instance) (rtax_router_uptime_seconds < +Inf)",
         "instant": true,
         "intervalMs": 1000,
         "maxDataPoints": 43200
@@ -609,10 +609,10 @@
       }
      ],
      "for": "0s",
-     "noDataState": "OK",
+     "noDataState": "NoData",
      "execErrState": "Error",
      "annotations": {
-      "summary": "The ASUS RT-AX56U's boot identity changed: it rebooted in the last 15 minutes."
+      "summary": "A decrease in fresh ASUS uptime samples was observed within 15 minutes, consistent with a restart. Corroborate router logs; a boot-time clock shift alone does not trigger this rule. Missing/unhealthy telemetry is No Data, not recovery."
      },
      "labels": {
       "severity": "warning"

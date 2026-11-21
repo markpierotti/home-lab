@@ -1,6 +1,6 @@
-# Home lab
+# Home Lab
 
-Slim’s DNS, monitoring, alerting and operating configuration: Pi-hole with Unbound,
+I run Slim for DNS, monitoring, alerting and recovery using Pi-hole with Unbound,
 Prometheus, Grafana, private backups, an external heartbeat and a restricted Hermes
 operator. The ASUS collector is a pinned dependency maintained in
 [ASUS Router Telemetry](https://github.com/markpierotti/asus-router-telemetry).
@@ -10,6 +10,17 @@ desktop and 400-pixel widths. The root-run backup/rollback helper has privileged
 regression tests. ASUS logs use a persistent filesystem with a fixed 256 MiB budget;
 exhaustion and recovery were checked in isolated Linux namespaces. These are dated
 acceptance observations, not a whole-host disaster-recovery guarantee.
+
+## November operations and security case studies
+
+I document real operational events and the evidence behind my recovery decisions. My next goal is a defensive SOC for my own systems, building on the existing monitoring stack.
+
+- [Infrastructure maintenance and recovery](docs/case-studies/infrastructure-maintenance-and-recovery.md)
+- [AI-assisted monitoring during provider failure](docs/case-studies/ai-provider-failure-and-recovery.md)
+- [Telemetry evidence preservation and mirror recovery](docs/case-studies/telemetry-vault-retry-and-recovery.md)
+- [Workstation security incident recovery and hardening](docs/case-studies/workstation-security-and-recovery.md)
+
+## Project documentation
 
 - [Project overview and portfolio copy](docs/portfolio-copy.md)
 - [13 November backup validation](docs/slim-backup-validation-20261113.md)

@@ -1,6 +1,6 @@
 # Home Lab — project overview and portfolio copy
 
-Updated 14 November 2026. Deployment claims below refer to the dated records
+Updated 22 November 2026. Deployment claims below refer to the dated records
 linked here; this page is not a fresh live-health report.
 
 ## Project card
@@ -29,6 +29,10 @@ and integrity checks. A full restore onto a clean host remains to be demonstrate
 | Off-host backup pull | Restored restricted SSH pull; fixed stdin consumption in the download loop; 14 archives and two SQLite databases checked | [Backup validation](slim-backup-validation-20261113.md) |
 | Evidence preservation | Hashed compressed objects, log base/append chains, daily snapshots for two SQLite sources, storage guards and a one-way Mac reading copy | [Capture and mirror design](../deploy/slim-vault/README.md) |
 
+## Recent operational case studies
+
+I documented four November case studies with selected Telegram and endpoint-tool screenshots. See the [case study index](case-studies/README.md) for maintenance recovery, the AI-provider failure, evidence-mirror recovery and workstation hardening. I am using these experiences to develop a defensive SOC for my own systems.
+
 ## Reusable CV bullets
 
 - Operated a Linux home lab integrating Pi-hole/Unbound, router telemetry,
@@ -42,7 +46,7 @@ and integrity checks. A full restore onto a clean host remains to be demonstrate
 
 ## Scope and next evidence
 
-Mark owns the lab, sets scope and authorizes live changes. AI coding assistants
+I own the lab, set scope and authorize live changes. AI coding assistants
 helped implement, review, test and document the tooling. Capture and mirroring make
 no model calls; the learning recorder does not retrain a model or automatically
 change the network.

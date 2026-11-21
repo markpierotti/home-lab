@@ -51,9 +51,7 @@ On 13 November, Slim's morning digest reported an installed kernel update requir
 
 *13 November — Hermes reported evidence from Prometheus and router logs, distinguishing a data-source evaluation error from a router reboot.*
 
-![Next-day digest correlating alerts with planned maintenance](evidence/2026-11-14-maintenance-digest.png)
-
-*14 November, 08:01 — the retrospective digest attributed the alert burst to planned host maintenance, citing the host journal.*
+The 14 November 08:01 retrospective digest attributed the alert burst to planned host maintenance, citing the host journal.
 
 ## Result and engineering lessons
 
